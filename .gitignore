@@ -1,0 +1,52 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Local data and development files
+data/*
+!data/protocols/
+!data/protocols/*.md
+models/
+.env
+.env.*
+!.env.example 
+
+# Temporary outputs and evaluation files
+submission_dev/
+check_full_code_dev/
+submission_dev_*/
+score.json
+testing_evidence.txt
+README_before_cleanup.txt
+README_before_cleanup*
+PACK_README_original.md
+
+# Editors and operating systems
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Build output and generated archives
+build/
+dist/
+node_modules/
+*.zip
+
+# Test and tool caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Local databases and logs
+*.db
+*.sqlite
+*.sqlite3
+*.log
