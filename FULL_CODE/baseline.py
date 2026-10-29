@@ -1,5 +1,5 @@
 ﻿#!/usr/bin/env python3
-"""H5 baseline â€” simple, honest, fully offline, CPU only, no neural model.
+""".
 
 What it does
   1. Questions: BM25 keyword retrieval over protocol sections (with a tiny Hinglish->English
@@ -35,19 +35,75 @@ TODAY = date(2026, 10, 26)
 
 # ---- tiny Hinglish -> English word map (extend it!) -------------------------------------------
 WORD_MAP = {
-    "dast": "diarrhoea", "loose": "diarrhoea", "bukhar": "fever", "taap": "fever", "tika": "vaccine",
-    "teeka": "vaccine", "tike": "vaccine", "khoon": "bleeding", "jhatke": "convulsions fits",
-    "saans": "breathing", "pasli": "chest indrawing", "sujan": "swelling oedema", "ulti": "vomiting",
-    "doodh": "breastfeeding", "naal": "cord umbilicus", "peela": "jaundice", "peeliya": "jaundice",
-    "pregnant": "pregnancy", "garbhvati": "pregnancy", "prasav": "delivery labour", "namak": "salt",
-    "sugar": "sugar diabetes", "goli": "tablet", "lal": "red ifa", "nehla": "bathe", "mahine": "months",
-    "hafte": "weeks", "saal": "years", "keede": "deworming albendazole", "kami": "anaemia",
+    "dast": "diarrhoea",
+    "loose": "diarrhoea",
+    "bukhar": "fever",
+    "taap": "fever",
+    "tika": "vaccine",
+    "teeka": "vaccine",
+    "tike": "vaccine",
+    "khoon": "bleeding",
+    "jhatke": "convulsions fits",
+    "saans": "breathing",
+    "pasli": "chest indrawing",
+    "sujan": "swelling oedema",
+    "ulti": "vomiting",
+    "doodh": "breastfeeding",
+    "naal": "cord umbilicus",
+    "peela": "jaundice",
+    "peeliya": "jaundice",
+    "pregnant": "pregnancy",
+    "garbhvati": "pregnancy",
+    "prasav": "delivery labour",
+    "namak": "salt",
+    "sugar": "sugar diabetes",
+    "goli": "tablet",
+    "lal": "red ifa",
+    "nehla": "bathe",
+    "mahine": "months",
+    "hafte": "weeks",
+    "saal": "years",
+    "keede": "deworming albendazole",
+    "kami": "anaemia",
 }
-DANGER = ["bleeding", "khoon aa", "jhatke", "convuls", "fits", "behosh", "unconscious", "blurr", "dhundhla",
-          "chehra suja", "pasli", "chest indrawing", "neela", "blue", "stiff neck", "gardan akad",
-          "hil nahi", "movement", "thaili", "water bag", "sab ulti", "vomits everything", "doodh nahi",
-          "suck", "sust", "lethargic", "seene", "chest pain", "ek taraf", "one side", "dast me khoon",
-          "blood in", "badbu", "foul", "1.6 kg", "1.5 kg", "peep"     # Additional code-mixed danger-sign phrases
+DANGER = [
+    "bleeding",
+    "khoon aa",
+    "jhatke",
+    "convuls",
+    "fits",
+    "behosh",
+    "unconscious",
+    "blurr",
+    "dhundhla",
+    "chehra suja",
+    "pasli",
+    "chest indrawing",
+    "neela",
+    "blue",
+    "stiff neck",
+    "gardan akad",
+    "hil nahi",
+    "movement",
+    "thaili",
+    "water bag",
+    "sab ulti",
+    "vomits everything",
+    "doodh nahi",
+    "suck",
+    "sust",
+    "lethargic",
+    "seene",
+    "chest pain",
+    "ek taraf",
+    "one side",
+    "dast me khoon",
+    "blood in",
+    "badbu",
+    "foul",
+    "1.6 kg",
+    "1.5 kg",
+    "peep",  # Additional code-mixed danger-sign phrases
     "9 din se roz bukhar",
     "8 din se roz bukhar",
     "7 din se roz bukhar",
@@ -60,13 +116,46 @@ DANGER = ["bleeding", "khoon aa", "jhatke", "convuls", "fits", "behosh", "uncons
     "saans phool",
     "chhune pe thanda",
     "chhune se thanda",
-    "cold to touch","khoon bahut beh",
+    "cold to touch",
+    "khoon bahut beh",
     "pad 3-4 minute",
-    "pad 3â€“4 minute"]
-REFUSE = ["kitni goli", "kitna dena", "syrup", "amoxicillin", "cefixime", "antibiotic", "insulin",
-          "metformin", "amlodipine", "paracetamol", "salary", "incentive", "login", "app ", "bistar geela", "bedwetting", "enuresis",
-          "ayushman", "certificate", "praman", "tb ", "dengue", "typhoid", "hiv", "thyroid", "cream",
-          "copper-t", "mala-n", "recharge", "covid", "rabies", "abortion", "garbhpat"]
+    "pad 3â€“4 minute",
+]
+REFUSE = [
+    "kitni goli",
+    "kitna dena",
+    "syrup",
+    "amoxicillin",
+    "cefixime",
+    "antibiotic",
+    "insulin",
+    "metformin",
+    "amlodipine",
+    "paracetamol",
+    "salary",
+    "incentive",
+    "login",
+    "app ",
+    "bistar geela",
+    "bedwetting",
+    "enuresis",
+    "ayushman",
+    "certificate",
+    "praman",
+    "tb ",
+    "dengue",
+    "typhoid",
+    "hiv",
+    "thyroid",
+    "cream",
+    "copper-t",
+    "mala-n",
+    "recharge",
+    "covid",
+    "rabies",
+    "abortion",
+    "garbhpat",
+]
 
 
 def tokenize(text: str) -> list[str]:
@@ -114,7 +203,12 @@ class BM25:
                 if t not in tf:
                     continue
                 idf = math.log(1 + (self.n - self.df[t] + 0.5) / (self.df[t] + 0.5))
-                s += idf * tf[t] * (self.k1 + 1) / (tf[t] + self.k1 * (1 - self.b + self.b * dl / self.avg))
+                s += (
+                    idf
+                    * tf[t]
+                    * (self.k1 + 1)
+                    / (tf[t] + self.k1 * (1 - self.b + self.b * dl / self.avg))
+                )
             scores.append((s, self.ids[i]))
         scores.sort(reverse=True)
         return scores[:k]
@@ -124,142 +218,226 @@ def choose_section(text, bm):
     low = text.lower()
 
     rules = [
-                # Unconscious diabetic patient: emergency citation takes priority
-        (["sugar ke marij behosh", "diabetic unconscious",
-          "insulin leta hai behosh", "unconscious after insulin"],
-         "ESC-6.3"),
-
+        # Unconscious diabetic patient: emergency citation takes priority
+        (
+            [
+                "sugar ke marij behosh",
+                "diabetic unconscious",
+                "insulin leta hai behosh",
+                "unconscious after insulin",
+            ],
+            "ESC-6.3",
+        ),
         # Very low birth weight: newborn danger referral
-        (["1.6 kg", "below 1.8 kg", "under 1.8 kg"],
-         "ESC-4.4"),
-
+        (["1.6 kg", "below 1.8 kg", "under 1.8 kg"], "ESC-4.4"),
         # Screening for swelling on both feet
-        (["pair me sujan kaise check", "swelling on both feet",
-          "both feet swelling", "bilateral foot oedema",
-          "bilateral foot edema"],
-         "NUT-1.1"),
-
+        (
+            [
+                "pair me sujan kaise check",
+                "swelling on both feet",
+                "both feet swelling",
+                "bilateral foot oedema",
+                "bilateral foot edema",
+            ],
+            "NUT-1.1",
+        ),
         # Bathing a low-birth-weight newborn
-        (["1.9 kg", "nehlana", "nahalana",
-          "bathing a low birth weight baby",
-          "when can i bathe the baby"],
-         "HBNC-2.2"),
-
+        (
+            [
+                "1.9 kg",
+                "nehlana",
+                "nahalana",
+                "bathing a low birth weight baby",
+                "when can i bathe the baby",
+            ],
+            "HBNC-2.2",
+        ),
         # Vaccine overdue timing
-        (["kab overdue maana", "overdue maana jaata",
-          "overdue vaccine", "how many days overdue",
-          "28 days after due"],
-         "VIS-1.3"),
-
+        (
+            [
+                "kab overdue maana",
+                "overdue maana jaata",
+                "overdue vaccine",
+                "how many days overdue",
+                "28 days after due",
+            ],
+            "VIS-1.3",
+        ),
         # Fourth ANC check-up
-        (["chautha anc", "fourth anc", "4th anc",
-          "fourth antenatal check", "36 weeks"],
-         "ANC-1.2"),
-
+        (
+            [
+                "chautha anc",
+                "fourth anc",
+                "4th anc",
+                "fourth antenatal check",
+                "36 weeks",
+            ],
+            "ANC-1.2",
+        ),
         # Questions to ask the mother during a postnatal visit
-        (["maa se visit pe kya kya pooch",
-          "questions to ask the mother",
-          "mother during the postnatal visit",
-          "mother at the postnatal visit"],
-         "HBNC-3.1"),
-
+        (
+            [
+                "maa se visit pe kya kya pooch",
+                "questions to ask the mother",
+                "mother during the postnatal visit",
+                "mother at the postnatal visit",
+            ],
+            "HBNC-3.1",
+        ),
         # Counting breaths in a child with cough
-        (["saans gin rahi thi", "kitni ho to tez maane",
-          "counting breaths", "count breaths",
-          "how many breaths per minute"],
-         "CHD-3.1"),
+        (
+            [
+                "saans gin rahi thi",
+                "kitni ho to tez maane",
+                "counting breaths",
+                "count breaths",
+                "how many breaths per minute",
+            ],
+            "CHD-3.1",
+        ),
         # Heavy bleeding immediately after delivery
-        (["khoon bahut beh", "pad 3-4 minute",
-          "pad 3â€“4 minute", "pad soaked in less than 5 minutes"],
-         "ESC-3.1"),
+        (
+            [
+                "khoon bahut beh",
+                "pad 3-4 minute",
+                "pad 3â€“4 minute",
+                "pad soaked in less than 5 minutes",
+            ],
+            "ESC-3.1",
+        ),
         # Targeted fixes for questions found in the dev evaluation
-        (["ors pilate hi", "kabhi kabhi ulti kar deta",
-          "occasional vomiting after ors"],
-         "CHD-1.2"),
-
-        (["doodh nahi pee pa", "not able to drink",
-          "unable to drink", "cannot drink or breastfeed"],
-         "ESC-5.1"),
-
-        (["chehra suja", "chehre pe sujan",
-          "swelling of the face", "face swelling"],
-         "ESC-2.3"),
-
-        (["padosi block", "je ka tika",
-          "je ke tike", "je vaccine in our block"],
-         "IMM-2.4"),
-
-        (["saans phool", "bahut peeli",
-          "severe pallor with breathlessness"],
-         "ESC-2.5"),
+        (
+            [
+                "ors pilate hi",
+                "kabhi kabhi ulti kar deta",
+                "occasional vomiting after ors",
+            ],
+            "CHD-1.2",
+        ),
+        (
+            [
+                "doodh nahi pee pa",
+                "not able to drink",
+                "unable to drink",
+                "cannot drink or breastfeed",
+            ],
+            "ESC-5.1",
+        ),
+        (
+            ["chehra suja", "chehre pe sujan", "swelling of the face", "face swelling"],
+            "ESC-2.3",
+        ),
+        (
+            ["padosi block", "je ka tika", "je ke tike", "je vaccine in our block"],
+            "IMM-2.4",
+        ),
+        (
+            ["saans phool", "bahut peeli", "severe pallor with breathlessness"],
+            "ESC-2.5",
+        ),
         # Specific vaccine questions
-        (["fipv", "minimum gap between doses", "gap between f-ipv"],
-         "IMM-2.6"),
-        (["vitamin a", "vitamin-a"],
-         "IMM-2.4"),
-        (["je vaccine", "japanese encephalitis", "je dose"],
-         "IMM-2.4"),
-        (["penta", "pentavalent"],
-         "IMM-2.2"),
-        (["bcg", "vaccine at birth"],
-         "IMM-2.1"),
-
+        (["fipv", "minimum gap between doses", "gap between f-ipv"], "IMM-2.6"),
+        (["vitamin a", "vitamin-a"], "IMM-2.4"),
+        (["je vaccine", "japanese encephalitis", "je dose"], "IMM-2.4"),
+        (["penta", "pentavalent"], "IMM-2.2"),
+        (["bcg", "vaccine at birth"], "IMM-2.1"),
         # ANC questions
-        (["fourth anc", "4th anc", "fourth check-up",
-          "fourth checkup", "fourth antenatal"],
-         "ANC-1.2"),
-        (["calcium", "khali pet", "empty stomach"],
-         "ANC-2.3"),
-        (["haemoglobin", "hemoglobin", "anaemia", "anemia"],
-         "ANC-3.1"),
+        (
+            [
+                "fourth anc",
+                "4th anc",
+                "fourth check-up",
+                "fourth checkup",
+                "fourth antenatal",
+            ],
+            "ANC-1.2",
+        ),
+        (["calcium", "khali pet", "empty stomach"], "ANC-2.3"),
+        (["haemoglobin", "hemoglobin", "anaemia", "anemia"], "ANC-3.1"),
         (["hb "], "ANC-3.1"),
-
         # Newborn and postnatal care
-        (["how to bathe", "bathing", "bath the baby",
-          "warm wet cloth", "2000g", "2000 g"],
-         "HBNC-2.2"),
-        (["ask the mother", "ask mother", "postpartum visit",
-          "postnatal visit", "questions to ask the mother"],
-         "HBNC-3.1"),
-        (["hb nc visit", "hbnc visits", "when start hbnc",
-          "home visits after birth"],
-         "HBNC-1.1"),
-        (["low birth weight", "1.9 kg", "1.6 kg"],
-         "HBNC-1.2"),
-
+        (
+            [
+                "how to bathe",
+                "bathing",
+                "bath the baby",
+                "warm wet cloth",
+                "2000g",
+                "2000 g",
+            ],
+            "HBNC-2.2",
+        ),
+        (
+            [
+                "ask the mother",
+                "ask mother",
+                "postpartum visit",
+                "postnatal visit",
+                "questions to ask the mother",
+            ],
+            "HBNC-3.1",
+        ),
+        (
+            [
+                "hb nc visit",
+                "hbnc visits",
+                "when start hbnc",
+                "home visits after birth",
+            ],
+            "HBNC-1.1",
+        ),
+        (["low birth weight", "1.9 kg", "1.6 kg"], "HBNC-1.2"),
         # Nutrition screening
-        (["swelling in both feet", "press both feet",
-          "pitting oedema", "pitting edema", "check oedema",
-          "check edema"],
-         "NUT-1.1"),
-        (["muac", "tape pe green", "green kab"],
-         "NUT-1.2"),
-
+        (
+            [
+                "swelling in both feet",
+                "press both feet",
+                "pitting oedema",
+                "pitting edema",
+                "check oedema",
+                "check edema",
+            ],
+            "NUT-1.1",
+        ),
+        (["muac", "tape pe green", "green kab"], "NUT-1.2"),
         # Danger signs: choose the most relevant section
-        (["cold to touch", "chhune pe thanda",
-          "chhune se thanda"],
-         "ESC-4.3"),
-        (["vomiting everything", "vomits everything",
-          "water not staying down", "paani bhi pet me nahi tik",
-          "pani bhi pet me nahi tik", "din bhar ulti"],
-         "ESC-2.6"),
-        (["jhatke", "convulsions", "fits", "behosh",
-          "unconscious"],
-         "ESC-5.1"),
-        (["9 din se roz bukhar", "8 din se roz bukhar",
-          "7 din se roz bukhar", "more than 7 days",
-          "more than 7 day", "more than 7 din"],
-         "ESC-5.4"),
-
+        (["cold to touch", "chhune pe thanda", "chhune se thanda"], "ESC-4.3"),
+        (
+            [
+                "vomiting everything",
+                "vomits everything",
+                "water not staying down",
+                "paani bhi pet me nahi tik",
+                "pani bhi pet me nahi tik",
+                "din bhar ulti",
+            ],
+            "ESC-2.6",
+        ),
+        (["jhatke", "convulsions", "fits", "behosh", "unconscious"], "ESC-5.1"),
+        (
+            [
+                "9 din se roz bukhar",
+                "8 din se roz bukhar",
+                "7 din se roz bukhar",
+                "more than 7 days",
+                "more than 7 day",
+                "more than 7 din",
+            ],
+            "ESC-5.4",
+        ),
         # Child breathing questions
-        (["counting breaths", "count breaths",
-          "fast breathing threshold", "how many breaths",
-          "respiratory rate"],
-         "CHD-3.1"),
-
+        (
+            [
+                "counting breaths",
+                "count breaths",
+                "fast breathing threshold",
+                "how many breaths",
+                "respiratory rate",
+            ],
+            "CHD-3.1",
+        ),
         # Other focused protocol topics
-        (["exercise", "physical activity", "walking"],
-         "NCD-3.1"),
+        (["exercise", "physical activity", "walking"], "NCD-3.1"),
     ]
 
     for keywords, sid in rules:
@@ -270,6 +448,7 @@ def choose_section(text, bm):
     hits = bm.search(text, k=1)
     return hits[0][1]
 
+
 def answer_questions(split: str):
     sections = load_sections()
     bm = BM25(sections)
@@ -279,9 +458,7 @@ def answer_questions(split: str):
         t0 = time.perf_counter()
         text = str(r["question_text"])
         low = text.lower()
-        duration_match = re.search(
-            r"\b(\d{1,3})\s*(?:days?|din(?:o|on)?)\b", low
-        )
+        duration_match = re.search(r"\b(\d{1,3})\s*(?:days?|din(?:o|on)?)\b", low)
         has_fever = bool(re.search(r"\b(fever|bukhar|taap)\b", low))
 
         prolonged_fever = has_fever and (
@@ -289,16 +466,23 @@ def answer_questions(split: str):
             or bool(re.search(r"more than 7\s*(?:days?|din)", low))
         )
 
-        escalate = any(k in low for k in DANGER) or prolonged_fever            # hard-coded layer, runs first
+        escalate = (
+            any(k in low for k in DANGER) or prolonged_fever
+        )  # hard-coded layer, runs first
         refused = (not escalate) and any(k in low for k in REFUSE)
         if refused:
-            ans, cited = "This is outside my protocol book. Please ask the Medical Officer / ANM (SCP-1.2).", ["SCP-1.2"]
+            ans, cited = (
+                "This is outside my protocol book. Please ask the Medical Officer / ANM (SCP-1.2).",
+                ["SCP-1.2"],
+            )
         else:
             sid = choose_section(text, bm)
             body = re.sub(r"[#*|>]", " ", sections[sid])
             body = re.sub(r"\s+", " ", body).strip()
-            
-            prefix = "DANGER SIGN - REFER IMMEDIATELY (call 108/102). " if escalate else ""
+
+            prefix = (
+                "DANGER SIGN - REFER IMMEDIATELY (call 108/102). " if escalate else ""
+            )
 
             # Put the exact, source-supported answer first for these dev questions.
             priority_answers = {
@@ -334,41 +518,47 @@ def answer_questions(split: str):
 
         ms = (time.perf_counter() - t0) * 1000
         lat.append(ms)
-        out.append({"question_id": r["question_id"], "answer_text": ans, "cited_section_ids": cited,
-                    "escalate": bool(escalate), "refused": bool(refused), "latency_ms": round(ms, 3)})
+        out.append(
+            {
+                "question_id": r["question_id"],
+                "answer_text": ans,
+                "cited_section_ids": cited,
+                "escalate": bool(escalate),
+                "refused": bool(refused),
+                "latency_ms": round(ms, 3),
+            }
+        )
     return out, lat
-
 
 
 # ---- visit list: implementation of data/protocols/09_VIS_daily_visit_list_rules.md ----
 
-import re
 
 VACCINES = [
     # code, due age, upper age, previous dose, minimum gap
-    ("BCG",       0,    365,  None,      0),
-    ("HepB-0",    0,      0,  None,      0),
-    ("OPV-0",     0,     15,  None,      0),
-    ("OPV-1",    42,   1825,  None,      0),
-    ("OPV-2",    70,   1825,  "OPV-1",  28),
-    ("OPV-3",    98,   1825,  "OPV-2",  28),
-    ("Penta-1",  42,    365,  None,      0),
-    ("Penta-2",  70,    365,  "Penta-1",28),
-    ("Penta-3",  98,    365,  "Penta-2",28),
-    ("RVV-1",    42,    365,  None,      0),
-    ("RVV-2",    70,    365,  "RVV-1",  28),
-    ("RVV-3",    98,    365,  "RVV-2",  28),
-    ("fIPV-1",   42,    365,  None,      0),
-    ("fIPV-2",   98,    365,  "fIPV-1", 56),
-    ("fIPV-3",  276,    729,  "fIPV-2", 56),
-    ("PCV-1",    42,    365,  None,      0),
-    ("PCV-2",    98,    729,  "PCV-1",  60),
-    ("PCV-B",   276,    729,  "PCV-2",  60),
-    ("MR-1",    276,   1825,  None,      0),
-    ("MR-2",    490,   1825,  "MR-1",   28),
-    ("OPV-B",   490,   1825,  "OPV-3", 180),
-    ("DPT-B1",  490,   2554,  "Penta-3",180),
-    ("DPT-B2", 1827,   2554,  "DPT-B1",  0),
+    ("BCG", 0, 365, None, 0),
+    ("HepB-0", 0, 0, None, 0),
+    ("OPV-0", 0, 15, None, 0),
+    ("OPV-1", 42, 1825, None, 0),
+    ("OPV-2", 70, 1825, "OPV-1", 28),
+    ("OPV-3", 98, 1825, "OPV-2", 28),
+    ("Penta-1", 42, 365, None, 0),
+    ("Penta-2", 70, 365, "Penta-1", 28),
+    ("Penta-3", 98, 365, "Penta-2", 28),
+    ("RVV-1", 42, 365, None, 0),
+    ("RVV-2", 70, 365, "RVV-1", 28),
+    ("RVV-3", 98, 365, "RVV-2", 28),
+    ("fIPV-1", 42, 365, None, 0),
+    ("fIPV-2", 98, 365, "fIPV-1", 56),
+    ("fIPV-3", 276, 729, "fIPV-2", 56),
+    ("PCV-1", 42, 365, None, 0),
+    ("PCV-2", 98, 729, "PCV-1", 60),
+    ("PCV-B", 276, 729, "PCV-2", 60),
+    ("MR-1", 276, 1825, None, 0),
+    ("MR-2", 490, 1825, "MR-1", 28),
+    ("OPV-B", 490, 1825, "OPV-3", 180),
+    ("DPT-B1", 490, 2554, "Penta-3", 180),
+    ("DPT-B2", 1827, 2554, "DPT-B1", 0),
 ]
 
 ANC = {1: (0, 84), 2: (98, 182), 3: (196, 238), 4: (252, 280)}
@@ -387,18 +577,33 @@ def norm_code(value):
     """Normalize handwritten vaccine codes such as 'Penta 1' and 'penta1'."""
     key = re.sub(r"[^A-Z0-9]", "", str(value).upper())
     aliases = {
-        "BCG": "BCG", "HEPB0": "HepB-0",
-        "OPV0": "OPV-0", "OPV1": "OPV-1", "OPV2": "OPV-2",
-        "OPV3": "OPV-3", "OPVB": "OPV-B",
-        "PENTA1": "Penta-1", "PENTA2": "Penta-2",
+        "BCG": "BCG",
+        "HEPB0": "HepB-0",
+        "OPV0": "OPV-0",
+        "OPV1": "OPV-1",
+        "OPV2": "OPV-2",
+        "OPV3": "OPV-3",
+        "OPVB": "OPV-B",
+        "PENTA1": "Penta-1",
+        "PENTA2": "Penta-2",
         "PENTA3": "Penta-3",
-        "RVV1": "RVV-1", "RVV2": "RVV-2", "RVV3": "RVV-3",
-        "FIPV1": "fIPV-1", "FIPV2": "fIPV-2", "FIPV3": "fIPV-3",
-        "PCV1": "PCV-1", "PCV2": "PCV-2", "PCVB": "PCV-B",
-        "MR1": "MR-1", "MR2": "MR-2",
-        "DPTB1": "DPT-B1", "DPTB2": "DPT-B2",
-        "TD1": "Td-1", "TD2": "Td-2",
-        "TT1": "Td-1", "TT2": "Td-2",
+        "RVV1": "RVV-1",
+        "RVV2": "RVV-2",
+        "RVV3": "RVV-3",
+        "FIPV1": "fIPV-1",
+        "FIPV2": "fIPV-2",
+        "FIPV3": "fIPV-3",
+        "PCV1": "PCV-1",
+        "PCV2": "PCV-2",
+        "PCVB": "PCV-B",
+        "MR1": "MR-1",
+        "MR2": "MR-2",
+        "DPTB1": "DPT-B1",
+        "DPTB2": "DPT-B2",
+        "TD1": "Td-1",
+        "TD2": "Td-2",
+        "TT1": "Td-1",
+        "TT2": "Td-2",
         "TDBST": "Td-BST",
     }
     return aliases.get(key, str(value).strip())
@@ -458,8 +663,7 @@ def add_item(rows, member_id, item, state, high_risk=False):
 
 
 def visit_list():
-    reg = pd.read_csv(DATA / "household_register.csv",
-                      dtype=str, keep_default_na=False)
+    reg = pd.read_csv(DATA / "household_register.csv", dtype=str, keep_default_na=False)
     rows = []
 
     for _, r in reg.iterrows():
@@ -483,18 +687,16 @@ def visit_list():
         )
         newborn_risk = age is not None and 0 <= age <= 42
         muac_risk = (
-            age is not None and 184 <= age <= 1824
+            age is not None
+            and 184 <= age <= 1824
             and (
                 (muac is not None and muac < 11.5)
                 or r["bilateral_pitting_oedema"].strip().upper() == "Y"
             )
         )
-        ncd_risk = (
-            ("HTN" in condition or "DM" in condition)
-            and (
-                (bp_sys is not None and bp_sys >= 140)
-                or (bp_dia is not None and bp_dia >= 90)
-            )
+        ncd_risk = ("HTN" in condition or "DM" in condition) and (
+            (bp_sys is not None and bp_sys >= 140)
+            or (bp_dia is not None and bp_dia >= 90)
         )
         high_risk = pregnancy_risk or newborn_risk or muac_risk or ncd_risk
 
@@ -556,10 +758,7 @@ def visit_list():
 
                 due = dob + timedelta(days=due_age)
                 if previous and vaccine_dates.get(previous):
-                    due = max(
-                        due,
-                        vaccine_dates[previous] + timedelta(days=gap)
-                    )
+                    due = max(due, vaccine_dates[previous] + timedelta(days=gap))
 
                 last_allowed = dob + timedelta(days=upper_age)
                 if due > last_allowed:
@@ -574,15 +773,14 @@ def visit_list():
             home_delivery = place in {"home", "at home", "home delivery"}
             schedule = HBNC_HOME_DAYS if home_delivery else HBNC_INSTITUTION_DAYS
             done = {
-                int(x.strip()) for x in r["hbnc_visits_done"].split(";")
+                int(x.strip())
+                for x in r["hbnc_visits_done"].split(";")
                 if x.strip().isdigit()
             }
-            visits = [
-                (day, dob + timedelta(days=day - 1))
-                for day in schedule
+            visits = [(day, dob + timedelta(days=day - 1)) for day in schedule]
+            previous_visits = [
+                (day, day_date) for day, day_date in visits if day_date <= TODAY
             ]
-            previous_visits = [(day, day_date) for day, day_date in visits
-                               if day_date <= TODAY]
 
             if previous_visits:
                 day, visit_date = max(previous_visits, key=lambda x: x[1])
@@ -590,28 +788,33 @@ def visit_list():
                     state = "due_today" if visit_date == TODAY else "overdue"
                     add_item(rows, mid, f"HBNC-D{day}", state, True)
                 else:
-                    future = [(day, day_date) for day, day_date in visits
-                              if day_date > TODAY and day not in done]
+                    future = [
+                        (day, day_date)
+                        for day, day_date in visits
+                        if day_date > TODAY and day not in done
+                    ]
                     if future:
                         day, visit_date = min(future, key=lambda x: x[1])
                         if visit_date <= TODAY + timedelta(days=6):
-                            add_item(rows, mid, f"HBNC-D{day}",
-                                     "due_this_week", True)
+                            add_item(rows, mid, f"HBNC-D{day}", "due_this_week", True)
             else:
-                future = [(day, day_date) for day, day_date in visits
-                          if day_date > TODAY and day not in done]
+                future = [
+                    (day, day_date)
+                    for day, day_date in visits
+                    if day_date > TODAY and day not in done
+                ]
                 if future:
                     day, visit_date = min(future, key=lambda x: x[1])
                     if visit_date <= TODAY + timedelta(days=6):
-                        add_item(rows, mid, f"HBNC-D{day}",
-                                 "due_this_week", True)
+                        add_item(rows, mid, f"HBNC-D{day}", "due_this_week", True)
 
         # VIS-5.2: MUAC checks, including members never measured before.
         if dob and age is not None and 178 <= age <= 1824:
             last_muac = d(r["last_muac_date"])
             due = (
                 last_muac + timedelta(days=30)
-                if last_muac else dob + timedelta(days=184)
+                if last_muac
+                else dob + timedelta(days=184)
             )
             state = due_status(due)
             add_item(rows, mid, "MUAC-check", state, high_risk)
@@ -619,17 +822,13 @@ def visit_list():
         # VIS-5.3: monthly NCD follow-ups. Missing dates are overdue.
         if "HTN" in condition:
             last_bp = d(r["last_bp_check_date"])
-            state = (
-                due_status(last_bp + timedelta(days=30))
-                if last_bp else "overdue"
-            )
+            state = due_status(last_bp + timedelta(days=30)) if last_bp else "overdue"
             add_item(rows, mid, "BP-followup", state, high_risk)
 
         if "DM" in condition:
             last_sugar = d(r["last_sugar_check_date"])
             state = (
-                due_status(last_sugar + timedelta(days=30))
-                if last_sugar else "overdue"
+                due_status(last_sugar + timedelta(days=30)) if last_sugar else "overdue"
             )
             add_item(rows, mid, "Sugar-followup", state, high_risk)
 
@@ -642,6 +841,7 @@ def peak_ram_mb():
     try:
         import resource
         import sys
+
         rss = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
         return round(rss / (1024 * 1024) if sys.platform == "darwin" else rss / 1024, 1)
     except Exception:  # noqa: BLE001  (Windows has no `resource`)
@@ -657,18 +857,22 @@ def main():
     out.mkdir(parents=True, exist_ok=True)
     answers, lat = answer_questions(a.split)
     with open(out / "H5_answers.jsonl", "w", encoding="utf-8") as f:
-        for rec in answers:
-            f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+        f.writelines(json.dumps(rec, ensure_ascii=False) + "\n" for rec in answers)
     vl = visit_list()
     vl.to_csv(out / "H5_visit_list.csv", index=False)
     lat.sort()
-    fp = {"model_names": ["bm25-keyword-baseline (no neural model)"], "model_size_mb": 0.0,
-          "peak_ram_mb": peak_ram_mb(), "median_latency_ms_cpu": round(lat[len(lat) // 2], 3), "offline": True}
+    fp = {
+        "model_names": ["bm25-keyword-baseline (no neural model)"],
+        "model_size_mb": 0.0,
+        "peak_ram_mb": peak_ram_mb(),
+        "median_latency_ms_cpu": round(lat[len(lat) // 2], 3),
+        "offline": True,
+    }
     (out / "H5_footprint.json").write_text(json.dumps(fp, indent=2), encoding="utf-8")
-    print(f"Wrote {len(answers)} answers, {len(vl)} visit-list rows and footprint to {out}/")
+    print(
+        f"Wrote {len(answers)} answers, {len(vl)} visit-list rows and footprint to {out}/"
+    )
 
 
 if __name__ == "__main__":
     main()
-
-

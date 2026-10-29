@@ -55,10 +55,11 @@ class TestChooseSection(unittest.TestCase):
         self.assertEqual(result, "CHD-3.1")
 
     def test_low_birth_weight_selects_newborn_protocol(self):
-        result = choose_section("How to care for a low birth weight baby?", self.searcher)
+        result = choose_section(
+            "How to care for a low birth weight baby?", self.searcher
+        )
         self.assertEqual(result, "HBNC-1.2")
 
 
 if __name__ == "__main__":
     unittest.main()
-

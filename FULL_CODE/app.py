@@ -1,6 +1,5 @@
-﻿
+﻿import sys
 from pathlib import Path
-import sys
 
 import pandas as pd
 import streamlit as st
@@ -98,12 +97,10 @@ with tab_ask:
             try:
                 tokens = baseline.tokenize(question)
                 is_danger = any(
-                    phrase in question.lower()
-                    for phrase in baseline.DANGER
+                    phrase in question.lower() for phrase in baseline.DANGER
                 )
                 is_refused = any(
-                    phrase in question.lower()
-                    for phrase in baseline.REFUSE
+                    phrase in question.lower() for phrase in baseline.REFUSE
                 )
 
                 # Safety-first gate: show the escalation message before
@@ -139,31 +136,42 @@ with tab_ask:
                         # Preserve topic-specific rules.
                         # Filter only weak BM25 fallback matches.
                         if section_id == candidate_id:
-                            question_tokens = set(
-                                baseline.tokenize(question)
-                            )
+                            question_tokens = set(baseline.tokenize(question))
                             section_tokens = set(
                                 baseline.tokenize(sections[candidate_id])
                             )
 
                             stop_words = {
-                                "i", "am", "is", "are", "the", "a", "an",
-                                "to", "of", "for", "from", "in", "on",
-                                "what", "how", "do", "does", "should",
-                                "my", "me", "we", "our", "can", "you"
+                                "i",
+                                "am",
+                                "is",
+                                "are",
+                                "the",
+                                "a",
+                                "an",
+                                "to",
+                                "of",
+                                "for",
+                                "from",
+                                "in",
+                                "on",
+                                "what",
+                                "how",
+                                "do",
+                                "does",
+                                "should",
+                                "my",
+                                "me",
+                                "we",
+                                "our",
+                                "can",
+                                "you",
                             }
 
-                            matched_tokens = (
-                                question_tokens & section_tokens
-                            )
-                            meaningful_matches = (
-                                matched_tokens - stop_words
-                            )
+                            matched_tokens = question_tokens & section_tokens
+                            meaningful_matches = matched_tokens - stop_words
 
-                            if (
-                                score < 10
-                                or len(meaningful_matches) < 2
-                            ):
+                            if score < 10 or len(meaningful_matches) < 2:
                                 section_id = None
                     else:
                         section_id = None
@@ -218,18 +226,15 @@ with tab_visits:
 
 with tab_about:
     st.subheader("About this prototype")
-    st.markdown(
-        """
+    st.markdown("""
         - **Retrieval:** BM25 keyword search over supplied protocol sections.
         - **Safety:** Keyword-based danger-sign escalation and out-of-scope refusal.
         - **Visit list:** Displays the baseline-generated household follow-up CSV.
         - **Limitations:** This is a prototype, not a clinically validated medical system.
         - **Connectivity:** The app uses local files and does not require a remote AI API,
           but the complete offline workflow still needs to be tested on the target device.
-        """
-    )
+        """)
     st.warning(
         "For urgent symptoms, follow approved clinical escalation procedures. "
         "Never rely on this prototype as the sole basis for medical decisions."
     )
-
