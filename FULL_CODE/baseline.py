@@ -67,6 +67,14 @@ WORD_MAP = {
     "kami": "anaemia",
 }
 DANGER = [
+    "fast breathing",
+    "breathing fast",
+    "difficulty breathing",
+    "difficult breathing",
+    "unable to breathe",
+    "rapid breathing",
+    "saans tez",
+    "saans lene mein dikkat",
     "bleeding",
     "khoon aa",
     "jhatke",
@@ -217,6 +225,27 @@ class BM25:
 def choose_section(text, bm):
     low = text.lower()
 
+    # Pregnancy-related swelling: use the ANC protocol, not child nutrition.
+    if (
+        ("pregnant" in low or "pregnancy" in low)
+        and any(term in low for term in ["swelling", "sujan", "oedema", "edema"])
+    ):
+        if "ANC-4.2" in bm.ids:
+            return "ANC-4.2"
+
+    # Feeding difficulty in a 2-month-old: use the young-infant danger signs.
+    age_two_months = any(
+        term in low
+        for term in ["2-month-old", "2 month old", "2-month old", "2 months old", "two-month-old"]
+    )
+    feeding_difficulty = any(
+        term in low
+        for term in ["unable to feed", "feed properly", "feeding properly", "unable to suck", "not feeding"]
+    )
+    if age_two_months and feeding_difficulty:
+        if "ESC-4.1" in bm.ids:
+            return "ESC-4.1"
+
     rules = [
         # Unconscious diabetic patient: emergency citation takes priority
         (
@@ -336,6 +365,17 @@ def choose_section(text, bm):
             "ESC-2.5",
         ),
         # Specific vaccine questions
+                # Missed measles-rubella vaccine at 9 months
+        (
+            [
+                "measles-containing vaccine",
+                "missed measles",
+                "missed mr",
+                "mr vaccine at 9 months",
+                "mr-1",
+            ],
+            "IMM-2.3",
+        ),
         (["fipv", "minimum gap between doses", "gap between f-ipv"], "IMM-2.6"),
         (["vitamin a", "vitamin-a"], "IMM-2.4"),
         (["je vaccine", "japanese encephalitis", "je dose"], "IMM-2.4"),
